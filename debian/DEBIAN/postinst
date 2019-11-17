@@ -1,0 +1,14 @@
+#!/bin/sh
+set -e
+
+# Source debconf library.
+. /usr/share/debconf/confmodule
+
+pip3 install -r /usr/share/openalpr-gpsupdate/requirements.txt
+update-rc.d openalpr-gpsupdate defaults 95 > /dev/null
+
+invoke-rc.d openalpr-gpsupdate restart
+
+
+
+db_stop

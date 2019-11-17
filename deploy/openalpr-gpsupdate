@@ -1,0 +1,81 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          openalpr-gpsupdate
+# Required-Start:    networking
+# Required-Stop:     networking
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: OpenALPR GPS Update
+#
+### END INIT INFO
+
+BASE_DIR=/usr/share/openalpr-gpsupdate
+
+DAEMON=/usr/bin/python3
+DAEMON_OPTS="/usr/share/openalpr-gpsupdate/openalprgps.py --device /dev/ttyUSB0"
+PIDFILE=/var/run/openalpr-gpsupdate.pid
+USER=root
+
+set -e
+
+DESC="OpenALPR GPS Update"
+NAME=$0
+
+#
+#       Function that starts the daemon/service.
+#
+d_start()
+{
+    # Starting all processes
+    if [ -f $PIDFILE ]; then
+        echo -n " already running"
+    else
+       start-stop-daemon --start --quiet --background \
+                       --pidfile $PIDFILE --make-pidfile \
+                       --chuid $USER -b  --exec $DAEMON -- $DAEMON_OPTS
+
+    fi
+}
+
+#
+#       Function that stops the daemon/service.
+#
+d_stop() {
+    # Killing all processes running
+    start-stop-daemon --stop --quiet --pidfile $PIDFILE \
+                          || echo -n " not running"
+    if [ -f $PIDFILE ]; then
+        rm $PIDFILE
+    fi
+}
+
+ACTION="$1"
+case "$ACTION" in
+    start)
+        echo -n "Starting $DESC: $NAME"
+        d_start
+        echo "."
+        ;;
+
+    stop)
+        echo -n "Stopping $DESC: $NAME"
+        d_stop
+        echo "."
+        ;;
+
+    restart|force-reload)
+        echo -n "Restarting $DESC: $NAME"
+        d_stop
+        sleep 1
+        d_start
+        echo "."
+        ;;
+
+    *)
+        echo "Usage: $NAME {start|stop|restart|force-reload}" >&2
+        exit 3
+        ;;
+esac
+
+exit 0
+

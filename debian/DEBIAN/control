@@ -1,0 +1,8 @@
+Package: openalpr-gpsupdate
+Version: 1.0.1-20191117104146
+Section: web
+Priority: optional
+Architecture: all
+Depends: debconf, python3.6, python3-requests, python3-pip
+Maintainer: Matthew Hill <matthill@openalpr.com>
+Description: OpenALPR GPS update
