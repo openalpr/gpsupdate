@@ -5,6 +5,7 @@ import pynmea2
 import requests
 import logging
 from argparse import ArgumentParser
+from logging.handlers import RotatingFileHandler
 
 logger = logging.getLogger('OpenALPR GPS Log')
 
@@ -15,9 +16,9 @@ def get_gps_data(device_handle):
     global gps_latitude, gps_longitude
 
 
-    gps_latitude = 33.1234
-    gps_longitude = -51.23
-    return
+    # gps_latitude = 33.1234
+    # gps_longitude = -51.23
+    # return
 
     ser = serial.Serial(device_handle, baudrate=4800, timeout=2, xonxoff=False, rtscts=False, dsrdtr=False) #Tried with and without the last 3 parameters, and also at 1Mbps, same happens.
     ser.flushInput()
@@ -41,16 +42,17 @@ def get_gps_data(device_handle):
             try:
                 gps_msg = pynmea2.parse(line.strip())
     #            gps_msg = pynmea2.parse('$GPGGA,204551.000,4106.4792,N,07348.4209,W,1,05,2.7,92.4,M,-34.2,M,,0000*52')
-                print("Message----")
+                #print("Message----")
 
-                print(gps_msg)
+                #print(gps_msg)
                 if gps_msg.latitude and gps_msg.longitude:
                     if gps_msg.latitude != 0 and gps_msg.longitude != 0:
                         gps_latitude = gps_msg.latitude
                         gps_longitude = gps_msg.longitude
-                        print(gps_msg.latitude)
-                        print(gps_msg.longitude)
-                print("-----D")
+                        logger.info(f"Read GPS: {gps_latitude} {gps_longitude}")
+                        # print(gps_msg.latitude)
+                        # print(gps_msg.longitude)
+                #print("-----D")
             except KeyboardInterrupt:
                 raise
             except:
@@ -76,7 +78,7 @@ def post_gps_data():
 
 if __name__ == "__main__":
 
-    parser = ArgumentParser(description='Amazon Plate Feed Daemon')
+    parser = ArgumentParser(description='OpenALPR GPS Update Daemon')
 
 
     parser.add_argument('-f', '--foreground', action='store_true', default=False,
@@ -100,8 +102,8 @@ if __name__ == "__main__":
         # Setup the logging
 
         # add a rotating file handler
-        handler = RotatingFileHandler(options.log, maxBytes=config_data['log_max_size_mb'] * 1024 * 1024,
-                                      backupCount=config_data['log_archives'])
+        handler = RotatingFileHandler(options.log, maxBytes=20 * 1024 * 1024,
+                                      backupCount=3)
 
         fmt = logging.Formatter("%(asctime)-15s %(thread)d: %(message)s", datefmt='%Y-%m-%dT%H:%M:%S')
         handler.setFormatter(fmt)
