@@ -16,6 +16,8 @@ After installing the software, configure OpenALPR daemon as follows.
 Add the following to /etc/openalpr/alprd.conf
 
     web_server_enabled = 1
+    gps_use_webservice = 1
+
 
 Restart OpenALPR services
 
