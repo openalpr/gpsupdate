@@ -25,3 +25,7 @@ Restart OpenALPR services
 
 The TTYUSB device can be set in /etc/init.d/openalpr-gpsupdate
 
+
+UDP Alternative
+------------------
+Some modems can be configured to push UDP GPS locations to an endpoint.  In this configuration, use the openalprgpsudp.py code.  This will receive a UDP payload containing GPS data, parse it, and POST to OpenALPR
