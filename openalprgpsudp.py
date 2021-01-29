@@ -10,16 +10,13 @@ import asyncio
 
 logger = logging.getLogger('OpenALPR GPS Log')
 
-gps_latitude = None
-gps_longitude = None
-
-
-def post_gps_data():
+def post_gps_data(gps_latitude, gps_longitude):
 
     try:
         response = requests.get('http://127.0.0.1:8355/gps/set',
                                  params={'latitude': gps_latitude,
-                                        'longitude': gps_longitude},)
+                                        'longitude': gps_longitude}
+                                )
 
         if response.status_code != 200:
             logger.info(f"Failed to update local webservice.  Response: {response.status_code}")
@@ -29,7 +26,8 @@ def post_gps_data():
     except KeyboardInterrupt:
         raise
     except:
-        logger.exception("Failed to send GPS data to webservice")
+#        logger.exception("Failed to send GPS data to webservice")
+        pass
 
 
 
@@ -52,14 +50,12 @@ class GPSServerProtocol:
                         if gps_msg.latitude != 0 and gps_msg.longitude != 0:
                             gps_latitude = gps_msg.latitude
                             gps_longitude = gps_msg.longitude
-                            post_gps_data()
+                            post_gps_data(gps_latitude, gps_longitude)
                             #return
                             # print(gps_msg.latitude)
                             # print(gps_msg.longitude)
         except:
             logger.exception("Failed to send GPS data to webservice")
-
-        #post_gps_data()
 
 
 
